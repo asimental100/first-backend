@@ -68,25 +68,9 @@ app.get('/weather', async (req, res) => {
 
         const mungedData = await getLatLong(userInput);
 
-        const userLat = mungedData.latitude;
-        const userLon = mungedData.longitude;
-    
-        const mungedWeather = await getWeather(userLat, userLon);
-        res.json(mungedWeather);
-    } catch (e) {
-        res.status(420).json({ error: e.message });
-    }
-});
-
-app.get('/trails', async (req, res) => {
-    try {
-        const userLat = req.query.latitude;
-        const userLon = req.query.longitude;
-    
-        const mungedData = await getHikes(userLat, userLon);
         res.json(mungedData);
     } catch (e) {
-        res.status(500).json({ error: e.message});
+        res.status(500).json({ error: e.message });
     }
 });
 
