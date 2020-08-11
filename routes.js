@@ -68,10 +68,9 @@ app.get('/weather', async (req, res) => {
 
         const mungedData = await getLatLong(userInput);
 
-        console.log(mungedData.latitude);
-        console.log(mungedData.longitude);
+        async const mungedWeather = await getWeather(mungedData.latitude, mungedData.longitude);
 
-        res.json(mungedData);
+        res.json(mungedWeather);
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
