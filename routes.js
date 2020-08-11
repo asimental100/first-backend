@@ -64,13 +64,17 @@ app.get('/location', async (req, res) => {
 
 app.get('/weather', async (req, res) => {
     try {
-        const userLat = req.query.latitude;
-        const userLon = req.query.longitude;
+        const userInput = req.query.search;
+
+        const mungedData = await getLatLong(userInput);
+
+        const userLat = mungedData.latitude;
+        const userLon = mungedData.longitude;
     
-        const mungedData = await getWeather(userLat, userLon);
-        res.json(mungedData);
+        const mungedWeather = await getWeather(userLat, userLon);
+        res.json(mungedWeather);
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.status(420).json({ error: e.message });
     }
 });
 
