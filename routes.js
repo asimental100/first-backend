@@ -19,35 +19,41 @@ async function getLatLong(cityName) {
 }
 
 async function getWeather(lat, lon) {
-    const respose = await request.get(`https://api.weatherbit.io/v2.0/forecast/daily?&lat=${lat}&lon=${lon}&key=${WEATHER_KEY}`);
+    const response = await request.get(`https://api.weatherbit.io/v2.0/forecast/daily?&lat=${lat}&lon=${lon}&key=${WEATHER_KEY}`);    
 
-    const weather = respose.data[0];
+    const weather = response.body.data;
 
-    return {
-        weather: weather.weather.description,
-        time: weather.ts,
-        sunrise: weather.sunrise_ts,
-        sunet: weather.sunset_ts
-    };
+    const mappedWeather = weather.map((forcast) => {
+        return {
+            weather: forcast.weather.description,
+            time: new Date(forcast.ts * 1000),
+            sunrise: new Date(forcast.sunrise_ts * 1000),
+            sunset: new Date(forcast.sunset_ts * 1000)
+        };
+    })
+
+    return mappedWeather;
 }
 
 async function getHikes(lat, lon) {
     const response = await request.get(`https://www.hikingproject.com/data/get-trails?lat=${lat}&lon=${lon}&maxDistance=200&key=${HIKING_KEY}`);
 
-    const hikes = response.map((hike) => {
+    const hikes = response.body.trails;
+
+    const mappedHikes = hikes.map((hike) => {
         return {
-            name: hike.trails.name,
-            location: hike.trails.location,
-            length: hike.trails.length,
-            summary: hike.trails.summary
+            name: hike.name,
+            location: hike.location,
+            length: hike.length,
+            summary: hike.summary
         };
     });
 
-    return hikes;
+    return mappedHikes;
 }
 
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+    res.send('Hello World! Go to /location or /weather or /trails or /weather2 or /trails2');
   })
 
 app.get('/location', async (req, res) => {
@@ -64,11 +70,10 @@ app.get('/location', async (req, res) => {
 
 app.get('/weather', async (req, res) => {
     try {
-        const userInput = req.query.search;
+        const userLatitude = req.query.latitude;
+        const userLongitude = req.query.longitude;
 
-        const mungedData = await getLatLong(userInput);
-
-        const mungedWeather = await getWeather(mungedData.latitude, mungedData.longitude);
+        const mungedWeather = await getWeather(userLatitude, userLongitude);
 
         res.json(mungedWeather);
     } catch (e) {
@@ -76,16 +81,58 @@ app.get('/weather', async (req, res) => {
     }
 });
 
+app.get('/weather2', async (req, res) => {
+    try {
+        const userInput = req.query.search;
+
+        const mungedWeatherData = await getLatLong(userInput);
+
+        const mungedWeather2 = await getWeather(mungedWeatherData.latitude, mungedWeatherData.longitude);
+
+        res.json(mungedWeather2);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.get('/trails', async (req, res) => {
+    try {
+        const userLatitude = req.query.latitude;
+        const userLongitude = req.query.longitude;
+
+        const mungedTrails = await getHikes(userLatitude, userLongitude);
+
+        res.json(mungedTrails);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.get('/trails2', async (req, res) => {
+    try {
+        const userInput = req.query.search;
+
+        const mungedTrailData = await getLatLong(userInput);
+
+        const mungedTrails2 = await getHikes(mungedTrailData.latitude, mungedTrailData.longitude);
+
+        res.json(mungedTrails2);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 app.get('/pokemon', async (req, res) => {
     try {
-        const response = await request.get('https://alchemy-pokedex.herokuapp.com/api/pokedex?pokemon=mew');
-        const pokemon = response.body.results;
+        const userPoke = req.query.search;
+        const response = await request.get(`https://alchemy-pokedex.herokuapp.com/api/pokedex?pokemon=${userPoke}`);
+        const pokemonResults = response.body.results;
 
-        const mews = pokemon.map((poke) => {
+        const pokemon = pokemonResults.map((poke) => {
             return poke.pokemon;
         });
 
-        res.json(mews);
+        res.json(pokemon);
         
     } catch (e) {
         res.status(500).json({ error: e.message });
