@@ -53,7 +53,7 @@ async function getHikes(lat, lon) {
 }
 
 app.get('/', (req, res) => {
-    res.send('Hello World! Go to /location or /weather or /trails or /weather2 or /trails2');
+    res.send('Hello World!\nGo to /location & /weather2 & /trails2 to search by city name.\nOr go to /weather & /trails to search by latitude and longitude.\nYou can also go to /pokemon to search for pokemon by their name.');
   })
 
 app.get('/location', async (req, res) => {
