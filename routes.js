@@ -24,7 +24,7 @@ async function getWeather(lat, lon) {
     const weather = respose.data;
 
     return {
-        weather: weather.weather.description,
+        weather: weather.description,
         time: weather.ts,
         sunrise: weather.sunrise_ts,
         sunet: weather.sunset_ts
@@ -68,7 +68,7 @@ app.get('/weather', async (req, res) => {
 
         const mungedData = await getLatLong(userInput);
 
-        const mungedWeather = await getWeather(10, -70);
+        const mungedWeather = await getWeather();
 
         res.json(mungedWeather);
     } catch (e) {
