@@ -21,10 +21,10 @@ async function getLatLong(cityName) {
 async function getWeather(lat, lon) {
     const respose = await request.get(`https://api.weatherbit.io/v2.0/forecast/daily?&lat=${lat}&lon=${lon}&key=${WEATHER_KEY}`);
 
-    const weather = respose.data;
+    const weather = respose.data[0];
 
     return {
-        weather: weather.description,
+        weather: weather.weather.description,
         time: weather.ts,
         sunrise: weather.sunrise_ts,
         sunet: weather.sunset_ts
