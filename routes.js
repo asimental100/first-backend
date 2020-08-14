@@ -19,7 +19,7 @@ async function getLatLong(cityName) {
 }
 
 async function getWeather(lat, lon) {
-    const response = await request.get(`https://api.weatherbit.io/v2.0/forecast/daily?&lat=${lat}&lon=${lon}&key=${WEATHER_KEY}`);    
+    const response = await request.get(`https://api.weatherbit.io/v2.0/forecast/daily?&lat=${lat}&lon=${lon}&key=${WEATHER_KEY}`);
 
     const weather = response.body.data;
 
@@ -71,9 +71,12 @@ app.get('/location', async (req, res) => {
 app.get('/weather', async (req, res) => {
     try {
         const userLatitude = req.query.latitude;
+        console.log(userLatitude);
         const userLongitude = req.query.longitude;
+        console.log(userLongitude);
 
         const mungedWeather = await getWeather(userLatitude, userLongitude);
+        console.log(mungedWeather);
 
         res.json(mungedWeather);
     } catch (e) {
